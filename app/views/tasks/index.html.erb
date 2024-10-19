@@ -5,48 +5,178 @@
 
   <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
   <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
-  <%= stylesheet_link_tag 'todo', media: 'all' %> <!-- เชื่อมไฟล์ todos.css -->
+
+  <style>
+    /* ตั้งค่าทั่วไป */
+    body {
+      font-family: 'Arial', sans-serif;
+
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 700px;
+    }
+
+    h1.title {
+      text-align: center;
+      font-size: 2.8rem;
+      margin-bottom: 2rem;
+      color: #34495e;
+      text-shadow: 1px 1px 0 rgba(0, 0, 0, 0.1);
+    }
+
+    .categories, .task-form, .navigation {
+      margin-bottom: 2rem;
+    }
+
+    .categories h2 {
+      font-size: 1.6rem;
+      color: #2980b9;
+      margin-bottom: 15px;
+    }
+
+    .categories ul {
+      list-style: none;
+      padding: 0;
+    }
+
+    .categories li {
+      font-size: 1.3rem;
+      margin: 10px 0;
+      color: #34495e;
+    }
+
+    .categories a {
+      color: #2980b9;
+      text-decoration: none;
+      padding-bottom: 2px;
+      border-bottom: 1px solid transparent;
+      transition: all 0.3s ease-in-out;
+    }
+
+    .categories a:hover {
+      color: #e67e22;
+      border-color: #e67e22;
+    }
+
+    .task-form .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .task-label {
+      font-size: 1.2rem;
+      color: #2c3e50;
+    }
+
+    .task-input {
+      padding: 12px;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      transition: border-color 0.3s ease-in-out;
+    }
+
+    .task-input:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    .create-btn {
+      background-color: #3498db;
+      border: none;
+      padding: 12px;
+      color: white;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .create-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .navigation {
+      text-align: center;
+    }
+
+    .btn-view-categories {
+      background-color: #2ecc71;
+      padding: 12px 24px;
+      color: white;
+      border-radius: 8px;
+      text-decoration: none;
+      font-size: 1.2rem;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .btn-view-categories:hover {
+      background-color: #27ae60;
+    }
+
+    .alert-danger {
+      background-color: #e74c3c;
+      padding: 15px;
+      border-radius: 8px;
+      font-size: 1.2rem;
+      text-align: center;
+      margin-bottom: 2rem;
+      color: white;
+    }
+  </style>
 </head>
 
 <body>
-  <h1 class="title">TODOS</h1>
+  <div class="container">
+    <h1 class="title">TODOS</h1>
 
-  <!-- ฟอร์มเพิ่ม Task ใหม่ -->
-  <div class="task-form">
-    <%= form_with model: @task, local: true do |f| %>
-      <div class="form-group">
-        <%= f.label :name, "Name", class: "task-label" %>
-        <%= f.text_field :name, class: "task-input" %>
-        <%= f.submit "Create Todo", class: "create-btn" %>
+    <!-- แสดงข้อความแจ้งเตือน -->
+    <% if flash[:alert] %>
+      <div class="alert alert-danger">
+        <%= flash[:alert] %>
       </div>
     <% end %>
-  </div>
 
-  <!-- แสดง Task ในหมวด Incomplete -->
-  <div class="task-section">
-    <h2 class="section-title">Incomplete Tasks</h2>
-    <ul class="task-list">
-      <% @incomplete_tasks.each do |task| %>
-        <li class="task-item">
-          <span><%= task.name %></span>
-          <div class="task-buttons">
-            <%= button_to "Complete", complete_task_path(task), method: :patch, class: "btn btn-complete" %>
-            <%= button_to "Delete", task_path(task), method: :delete, data: { confirm: "Are you sure?" }, class: "btn btn-delete" %>
-          </div>
-        </li>
-      <% end %>
-    </ul>
-  </div>
+    <!-- แสดงหมวดหมู่ทั้งหมด -->
+    <div class="categories">
+      <h2>Categories</h2>
+      <ul>
+        <% @categories.each do |category| %>
+          <li><%= link_to category.name, category_path(category) %></li>
+        <% end %>
+      </ul>
+    </div>
 
-  <!-- แสดง Task ในหมวด Complete -->
-  <div class="task-section">
-    <h2 class="section-title">Complete Tasks</h2>
-    <ul class="task-list">
-      <% @complete_tasks.each do |task| %>
-        <li class="task-item">
-          <%= task.name %>
-        </li>
+    <!-- ฟอร์มเพิ่ม Task ใหม่ -->
+    <div class="task-form">
+      <%= form_with model: @task, local: true do |f| %>
+        <div class="form-group">
+          <%= f.label :name, "Name", class: "task-label" %>
+          <%= f.text_field :name, class: "task-input" %>
+          <%= f.label :category_id, "Category", class: "task-label" %>
+          <%= f.collection_select :category_id, @categories, :id, :name, prompt: "Select Category", class: "task-input" %>
+          <%= f.submit "Create Todo", class: "create-btn" %>
+        </div>
       <% end %>
-    </ul>
+    </div>
+
+    <!-- ปุ่มนำทางไปยังหน้าหมวดหมู่ -->
+    <div class="navigation">
+      <%= link_to "View Categories", categories_path, class: "btn btn-view-categories" %>
+    </div>
   </div>
 </body>

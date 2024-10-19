@@ -1,0 +1,109 @@
+<head>
+  <title>Edit Category</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag 'application', media: 'all', 'data-turbolinks-track': 'reload' %>
+  <%= javascript_include_tag 'application', 'data-turbolinks-track': 'reload' %>
+
+  <style>
+    /* ตั้งค่าทั่วไป */
+    body {
+      font-family: 'Arial', sans-serif;
+      
+      color: #2c3e50;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.9);
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.2);
+      width: 100%;
+      max-width: 400px;
+    }
+
+    h1.title {
+      text-align: center;
+      font-size: 2.5rem;
+      margin-bottom: 1.5rem;
+      color: #2c3e50;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 15px;
+    }
+
+    .task-label {
+      font-size: 1.2rem;
+      color: #2c3e50;
+    }
+
+    .task-input {
+      padding: 12px;
+      border: 2px solid #bdc3c7;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      transition: border-color 0.3s ease-in-out;
+    }
+
+    .task-input:focus {
+      border-color: #3498db;
+      outline: none;
+    }
+
+    .create-btn {
+      background-color: #3498db;
+      border: none;
+      padding: 12px;
+      color: white;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      cursor: pointer;
+      transition: background-color 0.3s ease-in-out;
+    }
+
+    .create-btn:hover {
+      background-color: #2980b9;
+    }
+
+    .back-link {
+      display: block;
+      margin-top: 20px;
+      text-align: center;
+      font-size: 1.2rem;
+      color: #2980b9;
+      text-decoration: none;
+      transition: color 0.3s ease-in-out;
+    }
+
+    .back-link:hover {
+      color: #1abc9c;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <h1 class="title">Edit Category</h1>
+
+    <%= form_with model: @category, local: true do |f| %>
+      <div class="form-group">
+        <%= f.label :name, "Category Name", class: "task-label" %>
+        <%= f.text_field :name, class: "task-input" %>
+        <%= f.submit "Update Category", class: "create-btn" %>
+      </div>
+    <% end %>
+
+    <%= link_to "Back to Categories", categories_path, class: "back-link" %>
+  </div>
+</body>
